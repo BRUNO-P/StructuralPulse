@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Engineering Toolbox | Structural Pulse</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-container">
+            <img src="images/logo.png" alt="Structural Pulse Logo" class="logo-img">
+            <span class="logo-text">Structural Pulse</span>
+        </a>
+        <nav>
+            <a href="index.html#content">Content</a>
+            <a href="tools.html" class="active-nav">Tools</a>
+            <a href="index.html#resources">Resources</a>
+            <a href="index.html#about">About</a>
+            <a href="index.html#search">🔍 Search</a>
+        </nav>
+    </header>
+
+    <main class="tools-container">
+        <div class="tools-header" style="text-align: center; margin-bottom: 2.5rem;">
+            <span class="badge">TOOLBOX INDEX</span>
+            <h1 style="font-size: 2.2rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">Structural Analysis & Design Tools</h1>
+            <p class="tagline">Interactive web tools for section property evaluation, Eurocode member checks, and structural engineering analysis.</p>
+        </div>
+
+        <section class="scheme-section">
+            <h2>Select a Calculation Tool</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+
+                <div class="calc-panel" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid #e11d48;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span class="badge">SECTION ANALYSIS</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #10b981; background: #ecfdf5; padding: 0.2rem 0.5rem; border-radius: 4px;">AVAILABLE</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary);">Section Properties Calculator</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Cross-sectional area (A), centroid (y_s, z_s), strong & weak axis inertia (I_y, I_z), elastic & plastic section moduli, torsional constant (I_t), warping constant (I_w), and self-weight (kN/m) across Eurocode profile libraries (IPE, HE, HL, HD, HP, UPN, UPE, Angles, CHS, RHS) and custom shapes.
+                        </p>
+                    </div>
+                    <a href="section-calculator.html" class="cta-button" style="display: block; text-align: center; text-decoration: none; padding: 0.65rem 1rem; border-radius: 4px; font-weight: 700;">
+                        Open Calculator →
+                    </a>
+                </div>
+
+                <div class="calc-panel" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid #e11d48;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span class="badge">STRUCTURAL ANALYSIS</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #10b981; background: #ecfdf5; padding: 0.2rem 0.5rem; border-radius: 4px;">AVAILABLE</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary);">Beam Analyzer</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Interactive shear force diagrams (SFD), bending moment diagrams (BMD), maximum deflections (δ_max), and support reaction solver for Simply Supported, Cantilever, and Fixed-Fixed beams under point or distributed loads.
+                        </p>
+                    </div>
+                    <a href="beam-analyzer.html" class="cta-button" style="display: block; text-align: center; text-decoration: none; padding: 0.65rem 1rem; border-radius: 4px; font-weight: 700;">
+                        Launch Analyzer →
+                    </a>
+                </div>
+
+                <div class="calc-panel" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid #cbd5e1; opacity: 0.85;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span class="badge" style="background: #f1f5f9; color: #475569;">STEEL DESIGN</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #64748b; background: #f8fafc; padding: 0.2rem 0.5rem; border-radius: 4px;">COMING SOON</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary);">Steel Member Capacity (EN 1993-1-1)</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            ULS capacity checks for bending, shear, combined compression, and lateral-torsional buckling (LTB) in accordance with Eurocode 3.
+                        </p>
+                    </div>
+                    <button class="screenshot-btn" style="width: 100%; opacity: 0.6; cursor: not-allowed;" disabled>Under Development</button>
+                </div>
+
+                <div class="calc-panel" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid #cbd5e1; opacity: 0.85;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span class="badge" style="background: #f1f5f9; color: #475569;">CONCRETE DESIGN</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #64748b; background: #f8fafc; padding: 0.2rem 0.5rem; border-radius: 4px;">COMING SOON</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary);">RC Beam Flexure & Shear (EN 1992-1-1)</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Flexural rebar sizing, shear link spacing, crack width verification (SLS), and concrete cross-section design per Eurocode 2.
+                        </p>
+                    </div>
+                    <button class="screenshot-btn" style="width: 100%; opacity: 0.6; cursor: not-allowed;" disabled>Under Development</button>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

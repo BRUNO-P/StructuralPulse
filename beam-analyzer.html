@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beam Analyzer & Diagram Generator | Structural Pulse</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-container">
+            <img src="images/logo.png" alt="Structural Pulse Logo" class="logo-img">
+            <span class="logo-text">Structural Pulse</span>
+        </a>
+        <nav>
+            <a href="index.html#content">Content</a>
+            <a href="tools.html" class="active-nav">Tools</a>
+            <a href="index.html#resources">Resources</a>
+            <a href="index.html#about">About</a>
+            <a href="index.html#search">🔍 Search</a>
+        </nav>
+    </header>
+
+    <main class="tools-container" id="printableArea">
+        <div class="tools-header">
+            <div class="tools-header-top">
+                <span class="badge">STRUCTURAL ANALYSIS</span>
+                <button id="screenshotBtn" class="screenshot-btn">📸 Screen Shot / Export</button>
+            </div>
+            <h1>Beam Analyzer</h1>
+            <p class="tagline">Interactive shear force (SFD), bending moment (BMD), deflection curves, and support reaction solver.</p>
+        </div>
+
+        <section class="scheme-section">
+            <h2>Select Support Condition</h2>
+            <div class="scheme-grid">
+                <button class="scheme-card active" data-beam="ss">
+                    <h3>Simply Supported</h3>
+                    <p>Pin at A, Roller at B</p>
+                </button>
+                <button class="scheme-card" data-beam="cantilever">
+                    <h3>Cantilever</h3>
+                    <p>Fixed at A, Free at B</p>
+                </button>
+                <button class="scheme-card" data-shape="fixed" data-beam="fixed">
+                    <h3>Fixed - Fixed</h3>
+                    <p>Fixed at A, Fixed at B</p>
+                </button>
+            </div>
+        </section>
+
+        <section class="calc-grid">
+            <div class="calc-panel">
+                <div class="results-header-row">
+                    <h2>Beam Parameters</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="spanNum">Span Length <i>L</i> (m)</label>
+                    <div class="input-slider-row">
+                        <input type="range" id="spanSlider" min="1" max="20" step="0.5" value="6">
+                        <input type="number" id="spanNum" min="0.5" max="50" step="0.1" value="6.0" class="num-override">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loadTypeSelect">Loading Condition</label>
+                    <select id="loadTypeSelect" class="catalogue-select">
+                        <option value="udl">Uniformly Distributed Load (UDL - w)</option>
+                        <option value="point">Concentrated Point Load (P)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="udlGroup">
+                    <label for="udlNum">UDL Magnitude <i>w</i> (kN/m)</label>
+                    <div class="input-slider-row">
+                        <input type="range" id="udlSlider" min="1" max="100" step="1" value="12">
+                        <input type="number" id="udlNum" min="0.1" max="500" step="0.5" value="12.0" class="num-override">
+                    </div>
+                </div>
+
+                <div class="form-group" id="pointLoadGroup" style="display:none;">
+                    <label for="pointNum">Point Load <i>P</i> (kN)</label>
+                    <div class="input-slider-row">
+                        <input type="range" id="pointSlider" min="1" max="200" step="5" value="50">
+                        <input type="number" id="pointNum" min="0.1" max="1000" step="1" value="50.0" class="num-override">
+                    </div>
+                </div>
+
+                <div class="form-group" id="loadPosGroup" style="display:none;">
+                    <label for="posNum">Load Distance from Left <i>a</i> (m)</label>
+                    <div class="input-slider-row">
+                        <input type="range" id="posSlider" min="0" max="6" step="0.1" value="3">
+                        <input type="number" id="posNum" min="0" max="50" step="0.1" value="3.0" class="num-override">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="elasticNum">Elastic Modulus <i>E</i> (GPa)</label>
+                    <div class="input-slider-row">
+                        <input type="number" id="elasticNum" min="1" max="500" step="1" value="210" class="num-override" style="width:100%;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inertiaNum">Moment of Inertia <i>I<sub>x</sub></i> (cm⁴)</label>
+                    <div class="input-slider-row">
+                        <input type="number" id="inertiaNum" min="1" max="1000000" step="100" value="8690" class="num-override" style="width:100%;">
+                    </div>
+                </div>
+
+                <div class="results-panel" style="margin-top: 1.5rem;">
+                    <h2>Analysis Summary</h2>
+                    <div class="results-cards-grid" id="resultsGrid"></div>
+                </div>
+            </div>
+
+            <div class="calc-panel" style="display:flex; flex-direction:column; gap:1.25rem;">
+                <div>
+                    <h3 style="font-size:0.85rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">BEAM SCHEMATIC</h3>
+                    <canvas id="beamCanvas" width="450" height="140" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; width:100%;"></canvas>
+                </div>
+                <div>
+                    <h3 style="font-size:0.85rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">SHEAR FORCE DIAGRAM (SFD - kN)</h3>
+                    <canvas id="sfdCanvas" width="450" height="130" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; width:100%;"></canvas>
+                </div>
+                <div>
+                    <h3 style="font-size:0.85rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">BENDING MOMENT DIAGRAM (BMD - kNm)</h3>
+                    <canvas id="bmdCanvas" width="450" height="130" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; width:100%;"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="calc-panel full-width-panel" style="margin-top: 2rem;">
+            <div class="results-header-row">
+                <h2>Analytical Equations & Proofs</h2>
+                <button id="toggleStepsBtn" class="toggle-steps-btn">Hide the steps</button>
+            </div>
+            <div id="calcSteps" class="steps-code-block"></div>
+        </section>
+    </main>
+
+    <script src="beam-analyzer.js"></script>
+</body>
+</html>
