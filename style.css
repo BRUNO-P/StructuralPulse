@@ -1,9 +1,13 @@
+/* ==========================================================================
+   1. CSS RESET & BRAND VARIABLES
+   ========================================================================== */
 :root {
-    --primary: #0f172a;       /* Deep Slate */
-    --accent: #1d4ed8;        /* Technical Blue */
-    --bg: #f8fafc;            /* Canvas Background */
-    --surface: #ffffff;       /* Pure White Cards */
-    --text-main: #0f172a;     /* Sharp Dark Text */
+    --primary: #0f172a;       /* Slate / Dark Navy */
+    --brand-red: #e11d48;     /* Structural Pulse Red (Matching Logo) */
+    --accent-blue: #2563eb;   /* Technical Accent Blue */
+    --bg: #f8fafc;            /* Clean Surface Canvas */
+    --surface: #ffffff;       /* Card Background */
+    --text-main: #0f172a;     /* Sharp Dark Charcoal Text */
     --text-muted: #64748b;    /* Muted Slate Text */
     --border: #cbd5e1;        /* Crisp Structural Border */
 }
@@ -21,17 +25,32 @@ body {
     line-height: 1.6;
 }
 
-/* --- HEADER & NAVIGATION --- */
+/* ==========================================================================
+   2. HEADER & BRAND NAVIGATION
+   ========================================================================== */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--surface);
     border-bottom: 2px solid var(--primary);
-    padding: 1.25rem 3rem;
+    padding: 1rem 3rem;
 }
 
-.logo {
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 44px;
+    width: auto;
+    display: block;
+}
+
+.logo-text {
     font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -50,42 +69,117 @@ nav a {
     transition: color 0.2s ease;
 }
 
-nav a:hover {
-    color: var(--accent);
+nav a:hover,
+nav a.active-nav {
+    color: var(--brand-red) !important;
 }
 
-/* --- HERO SECTION --- */
-.hero {
+nav a.active-nav {
+    border-bottom: 2px solid var(--brand-red);
+}
+
+/* ==========================================================================
+   3. EDITORIAL HERO BANNER (VIDEO & STATIC FALLBACK)
+   ========================================================================== */
+.hero-banner {
+    position: relative;
+    width: 100%;
+    min-height: 480px;
+    background-image: url('images/hero-bg.jpg'); /* Static background fallback */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    margin-bottom: 3rem;
+    border-bottom: 3px solid var(--brand-red);
+    overflow: hidden;
+}
+
+/* Background video positioning */
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+/* Fades out video when user scrolls down */
+.hero-banner.scrolled .hero-video {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg, 
+        rgba(15, 23, 42, 0.92) 0%, 
+        rgba(15, 23, 42, 0.75) 50%, 
+        rgba(15, 23, 42, 0.40) 100%
+    );
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
     max-width: 1100px;
-    margin: 3rem auto 2rem auto;
-    padding: 0 1.5rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 2rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    color: var(--surface);
 }
 
-.hero h1 {
-    font-size: 2.75rem;
+.hero-category {
+    display: block;
+    font-size: 0.8rem;
     font-weight: 800;
-    color: var(--primary);
+    letter-spacing: 2px;
+    color: var(--brand-red);
+    margin-bottom: 1rem;
+}
+
+.hero-title {
+    font-size: 3.25rem;
+    font-weight: 800;
+    line-height: 1.15;
     letter-spacing: -1px;
+    max-width: 850px;
+    margin-bottom: 1.25rem;
+    color: #ffffff;
 }
 
-.subtitle {
-    font-weight: 700;
-    color: var(--accent);
-    text-transform: uppercase;
+.hero-subtitle {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+.hero-founder {
     font-size: 0.85rem;
-    letter-spacing: 1px;
-    margin-top: 0.25rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
 }
 
-.tagline {
-    font-size: 1.15rem;
-    color: var(--text-muted);
-    margin-top: 0.5rem;
-}
-
-/* --- FILTER BUTTONS --- */
+/* ==========================================================================
+   4. CONTENT FILTER BUTTONS
+   ========================================================================== */
 .filters {
     max-width: 1100px;
     margin: 0 auto 2.5rem auto;
@@ -107,13 +201,16 @@ nav a:hover {
     transition: all 0.2s ease;
 }
 
-.filter-btn.active, .filter-btn:hover {
-    background: var(--primary);
+.filter-btn.active, 
+.filter-btn:hover {
+    background: var(--brand-red);
     color: var(--surface);
-    border-color: var(--primary);
+    border-color: var(--brand-red);
 }
 
-/* --- MULTI-COLUMN ARTICLE GRID --- */
+/* ==========================================================================
+   5. HOMEPAGE ARTICLE GRID
+   ========================================================================== */
 main {
     max-width: 1100px;
     margin: 0 auto 4rem auto;
@@ -136,7 +233,7 @@ main {
 
 .card:hover {
     transform: translateY(-2px);
-    border-color: var(--primary);
+    border-color: var(--brand-red);
 }
 
 .badge {
@@ -169,7 +266,7 @@ main {
 .tags {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--accent);
+    color: var(--accent-blue);
     margin-bottom: 0.75rem;
 }
 
@@ -177,4 +274,547 @@ main {
     color: var(--text-main);
     font-size: 0.9rem;
     line-height: 1.5;
+}
+
+/* ==========================================================================
+   6. ARTICLE DETAIL READER PAGE
+   ========================================================================== */
+.article-container {
+    max-width: 800px;
+    margin: 2.5rem auto 4rem auto;
+    padding: 0 1.5rem;
+    display: block;
+}
+
+.back-link {
+    display: inline-block;
+    color: var(--brand-red);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.article-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.article-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--primary);
+    margin: 0.75rem 0;
+}
+
+.featured-figure {
+    margin-bottom: 2.5rem;
+}
+
+.featured-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.featured-figure figcaption {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.article-content h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 2rem 0 0.75rem 0;
+}
+
+.article-content p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-main);
+    margin-bottom: 1.25rem;
+}
+
+.article-content ul {
+    margin: 0 0 1.5rem 1.5rem;
+    color: var(--text-main);
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.author-card {
+    margin-top: 4rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--brand-red);
+    border-radius: 4px;
+}
+
+.author-card h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.author-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   7. ENGINEERING TOOLS SUITE
+   ========================================================================== */
+main.tools-container {
+    display: block !important;
+    max-width: 1100px;
+    margin: 2.5rem auto 4rem auto;
+    padding: 0 1.5rem;
+}
+
+.tools-header {
+    display: block;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.tools-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0.5rem 0;
+}
+
+.scheme-section h2, 
+.calc-panel h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Static Scheme Selector Row */
+.scheme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.scheme-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.scheme-card:hover {
+    border-color: var(--brand-red);
+}
+
+.scheme-card.active {
+    border-color: var(--brand-red);
+    background: #fff5f5;
+}
+
+.scheme-diagram {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--brand-red);
+    background: var(--bg);
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.scheme-card h3 {
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.scheme-card p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Inputs & Results 2-Column Panel Layout */
+.calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .calc-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.calc-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.75rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.35rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--brand-red);
+}
+
+.form-group small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Calculation Output Cards */
+.results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.result-card {
+    background: var(--bg);
+    border-left: 4px solid var(--primary);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.result-card.highlight {
+    border-left-color: var(--brand-red);
+    background: #fff5f5;
+}
+
+.result-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.result-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-top: 0.2rem;
+}
+
+.result-card.highlight .result-value {
+    color: var(--brand-red);
+}
+
+.result-subtext {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+/* Slider + Numeric Input Row */
+.input-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.num-override {
+    width: 90px !important;
+    padding: 0.4rem 0.5rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+/* Results Header & Unit Selector */
+.results-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.unit-toggle {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg);
+    padding: 0.2rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.unit-btn {
+    background: transparent;
+    border: none;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 3px;
+    color: var(--text-muted);
+}
+
+.unit-btn.active {
+    background: var(--primary);
+    color: var(--surface);
+}
+
+/* Calculation Steps Code Block */
+.full-width-panel {
+    grid-column: 1 / -1;
+}
+
+.steps-code-block {
+    background: #0f172a;
+    color: #38bdf8;
+    font-family: monospace;
+    font-size: 0.9rem;
+    padding: 1.25rem;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* Screen Shot / Export Button */
+.tools-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.screenshot-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--primary);
+    transition: all 0.2s ease;
+}
+
+.screenshot-btn:hover {
+    background: var(--brand-red);
+    color: var(--surface);
+    border-color: var(--brand-red);
+}
+
+.unit-toggle-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    align-self: center;
+    margin-right: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- PRINT & CAPTURE MEDIA STYLES --- */
+@media print {
+    header, nav, .screenshot-btn, .scheme-section {
+        display: none !important;
+    }
+    body {
+        background: white;
+    }
+    .tools-container {
+        margin: 0;
+        padding: 0;
+    }
+    .calc-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1rem;
+    }
+}
+/* Catalogue Select Styling */
+.catalogue-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+}
+
+.catalogue-select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--bg);
+    cursor: pointer;
+}
+
+.catalogue-select:focus {
+    outline: none;
+    border-color: var(--brand-red);
+}
+
+/* Hide / Show Steps Toggle Button */
+.toggle-steps-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.toggle-steps-btn:hover {
+    background: var(--primary);
+    color: var(--surface);
+    border-color: var(--primary);
+}
+/* Responsive Dynamic Property Cards Grid */
+.results-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.result-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+}
+
+.result-card.highlight {
+    background: #fff1f2;
+    border-color: #f43f5e;
+}
+
+.result-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.result-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+    font-family: monospace;
+}
+/* 2x2 Grid Architecture for Section Calculator */
+.calc-2x2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.box-inputs,
+.box-diagram,
+.box-results,
+.box-canvas {
+    height: 100%;
+    min-height: 480px;
+}
+
+/* Responsive Collapse for Mobile Displays */
+@media (max-width: 992px) {
+    .calc-2x2-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+}
+/* 2x2 Grid Layout for Section Calculator */
+.calc-2x2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.box-inputs {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.box-diagram {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.box-canvas {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.box-results {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.box-inputs,
+.box-diagram,
+.box-results,
+.box-canvas {
+    height: 100%;
+    min-height: 480px;
+}
+
+/* Responsive Collapse for Mobile Devices */
+@media (max-width: 992px) {
+    .calc-2x2-grid {
+        grid-template-columns: 1fr;
+    }
+    .box-inputs, .box-diagram, .box-canvas, .box-results {
+        grid-column: 1;
+        grid-row: auto;
+    }
 }

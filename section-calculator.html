@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Properties Calculator | Structural Pulse</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for LaTeX Equation Rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-container">
+            <img src="images/logo.png" alt="Structural Pulse Logo" class="logo-img">
+            <span class="logo-text">Structural Pulse</span>
+        </a>
+        <nav>
+            <a href="index.html#content">Content</a>
+            <a href="tools.html" class="active-nav">Tools</a>
+            <a href="#resources">Resources</a>
+            <a href="#about">About</a>
+            <a href="index.html#search">🔍 Search</a>
+        </nav>
+    </header>
+
+    <main class="tools-container" id="printableArea">
+        <div class="tools-header">
+            <div class="tools-header-top">
+                <span class="badge">SECTION ANALYSIS</span>
+                <button id="screenshotBtn" class="screenshot-btn">📸 Screen Shot / Export</button>
+            </div>
+            <h1>Section Properties Calculator</h1>
+            <p class="tagline">Area, centroid, moment of inertia, section moduli, radius of gyration, material self-weight, and interactive cross-section rendering.</p>
+        </div>
+
+        <!-- Shape Selector Grid -->
+        <section class="scheme-section">
+            <h2>Select Cross-Section Geometry</h2>
+            <div class="scheme-grid">
+                <button class="scheme-card active" data-shape="rectangle">
+                    <h3>Solid Rectangle</h3>
+                    <p>Solid rectangular beam</p>
+                </button>
+                <button class="scheme-card" data-shape="box">
+                    <h3>Hollow Box (RHS)</h3>
+                    <p>Rectangular hollow section</p>
+                </button>
+                <button class="scheme-card" data-shape="circle">
+                    <h3>Solid Circle</h3>
+                    <p>Solid round bar</p>
+                </button>
+                <button class="scheme-card" data-shape="pipe">
+                    <h3>Hollow Pipe (CHS)</h3>
+                    <p>Circular hollow section</p>
+                </button>
+                <button class="scheme-card" data-shape="ibeam">
+                    <h3>H / I Beam</h3>
+                    <p>Wide flange & I-section</p>
+                </button>
+                <button class="scheme-card" data-shape="psci">
+                    <h3>PSC I-Girder</h3>
+                    <p>Prestressed concrete bulb girder</p>
+                </button>
+                <button class="scheme-card" data-shape="tee">
+                    <h3>Tee Beam</h3>
+                    <p>T-section structural beam</p>
+                </button>
+                <button class="scheme-card" data-shape="channel">
+                    <h3>Channel</h3>
+                    <p>C-channel / U-profile</p>
+                </button>
+                <button class="scheme-card" data-shape="angle">
+                    <h3>Angle</h3>
+                    <p>L-section structural angle</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- Catalogue Preset Selector -->
+        <section class="form-group catalogue-group" id="catalogueGroup" style="display:none; margin-bottom: 2rem;">
+            <label for="presetSelect">Standard Size Catalogue</label>
+            <select id="presetSelect" class="catalogue-select">
+            </select>
+        </section>
+
+        <!-- 2x2 MODULAR GRID -->
+        <section class="calc-2x2-grid">
+            <!-- 1. TOP-LEFT: INPUT DIMENSIONS -->
+            <div class="calc-panel box-inputs">
+                <div class="results-header-row">
+                    <h2>Input Dimensions</h2>
+                    <div class="unit-toggle">
+                        <span class="unit-toggle-label">INPUT:</span>
+                        <button class="unit-btn input-unit-btn active" data-unit="mm">mm</button>
+                        <button class="unit-btn input-unit-btn" data-unit="cm">cm</button>
+                        <button class="unit-btn input-unit-btn" data-unit="m">m</button>
+                    </div>
+                </div>
+
+                <!-- Material & Specific Weight Control -->
+                <div class="form-group" id="materialGroup" style="margin-bottom: 1.25rem;">
+                    <label for="materialSelect">Material / Specific Weight (<i>γ</i>)</label>
+                    <div class="input-slider-row">
+                        <select id="materialSelect" class="catalogue-select" style="flex:1;">
+                            <option value="78.5" selected>Structural Steel (78.5 kN/m³)</option>
+                            <option value="25.0">Reinforced Concrete (25.0 kN/m³)</option>
+                            <option value="24.0">Plain Concrete (24.0 kN/m³)</option>
+                            <option value="27.0">Aluminum (27.0 kN/m³)</option>
+                            <option value="5.0">Timber / Wood (5.0 kN/m³)</option>
+                            <option value="custom">Custom Specific Weight...</option>
+                        </select>
+                        <div id="customGammaWrap" style="display:none; align-items:center; gap:0.4rem;">
+                            <input type="number" id="gammaNum" min="0.1" max="500" step="0.1" value="78.5" class="num-override" style="width:85px;">
+                            <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">kN/m³</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STANDARD SHAPE INPUTS -->
+                <div id="standardInputs">
+                    <div class="form-group" id="heightGroup">
+                        <label for="heightNum">Total Height <i>H</i> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="heightSlider" min="10" max="2500" step="5" value="180">
+                            <input type="number" id="heightNum" min="1" max="10000" step="1" value="180.0" class="num-override">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="widthGroup">
+                        <label for="widthNum"><span id="widthLabelTxt">Width <i>b</i></span> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="widthSlider" min="10" max="2000" step="5" value="91">
+                            <input type="number" id="widthNum" min="0.001" max="10000" step="1" value="91.0" class="num-override">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="flangeThickGroup" style="display:none;">
+                        <label for="flangeThickNum"><span id="flangeThickLabelTxt">Flange Thickness <i>t<sub>f</sub></i></span> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="flangeThickSlider" min="1" max="500" step="0.5" value="8.0">
+                            <input type="number" id="flangeThickNum" min="0.1" max="1000" step="0.1" value="8.0" class="num-override">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="webThickGroup" style="display:none;">
+                        <label for="webThickNum">Web Thickness <i>t<sub>w</sub></i> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="webThickSlider" min="1" max="500" step="0.1" value="5.3">
+                            <input type="number" id="webThickNum" min="0.1" max="1000" step="0.1" value="5.3" class="num-override">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="diamGroup" style="display:none;">
+                        <label for="diamNum">Diameter <i>D</i> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="diamSlider" min="10" max="1000" step="1" value="300">
+                            <input type="number" id="diamNum" min="0.001" max="10000" step="0.1" value="300.0" class="num-override">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="thickGroup" style="display:none;">
+                        <label for="thickNum">Thickness <i>t</i> (<span class="input-unit-txt">mm</span>)</label>
+                        <div class="input-slider-row">
+                            <input type="range" id="thickSlider" min="2" max="100" step="1" value="15">
+                            <input type="number" id="thickNum" min="0.001" max="1000" step="0.1" value="15.0" class="num-override">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PSC I-GIRDER PARAMETRIC INPUTS (Optimized 2-Column Grid) -->
+                <div id="psciInputs" style="display:none; flex-direction:column; gap:0.5rem;">
+                    <div style="font-weight:700; font-size:0.85rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:0.2rem; margin-top:0.5rem;">TOP FLANGE</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <div class="form-group">
+                            <label>Edge <i>HT1</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="ht1Slider" min="10" max="300" step="1" value="120"><input type="number" id="ht1Num" value="120.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Slope <i>HT2</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="ht2Slider" min="0" max="300" step="1" value="60"><input type="number" id="ht2Num" value="60.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Haunch <i>HT3</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="ht3Slider" min="0" max="300" step="1" value="40"><input type="number" id="ht3Num" value="40.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Inner <i>T1</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="t1Slider" min="0" max="300" step="1" value="40"><input type="number" id="t1Num" value="40.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Outer Overhang <i>T2</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="t2Slider" min="0" max="1500" step="5" value="402.5"><input type="number" id="t2Num" value="402.5" class="num-override"></div>
+                        </div>
+                    </div>
+
+                    <div style="font-weight:700; font-size:0.85rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:0.2rem; margin-top:0.5rem;">WEB</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <div class="form-group">
+                            <label>Height <i>HW</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="hwSlider" min="50" max="4000" step="10" value="1242"><input type="number" id="hwNum" value="1242.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Thick <i>W1</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="w1Slider" min="10" max="800" step="5" value="200"><input type="number" id="w1Num" value="200.0" class="num-override"></div>
+                        </div>
+                    </div>
+
+                    <div style="font-weight:700; font-size:0.85rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:0.2rem; margin-top:0.5rem;">BOTTOM BULB</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <div class="form-group">
+                            <label>Inner Taper <i>HB1</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="hb1Slider" min="0" max="300" step="1" value="48"><input type="number" id="hb1Num" value="48.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outer Taper <i>HB2</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="hb2Slider" min="0" max="300" step="1" value="40"><input type="number" id="hb2Num" value="40.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Edge Height <i>HB3</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="hb3Slider" min="10" max="1000" step="5" value="150"><input type="number" id="hb3Num" value="150.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Inner Taper <i>B1</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="b1Slider" min="0" max="500" step="1" value="48"><input type="number" id="b1Num" value="48.0" class="num-override"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outer Overhang <i>B2</i> (<span class="input-unit-txt">mm</span>)</label>
+                            <div class="input-slider-row"><input type="range" id="b2Slider" min="0" max="1000" step="5" value="110"><input type="number" id="b2Num" value="110.0" class="num-override"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. BOTTOM-LEFT: DIMENSION KEY DIAGRAM -->
+            <div class="calc-panel box-diagram" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <h2 style="font-size:1rem; color:var(--text-muted); margin-bottom:0.75rem; align-self:flex-start;">Dimension Key Diagram</h2>
+                <div id="dimensionDiagram" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                </div>
+            </div>
+
+            <!-- 3. TOP-RIGHT: SCALED CROSS-SECTION PLOT CANVAS -->
+            <div class="calc-panel box-canvas" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <h2 style="font-size:1rem; color:var(--text-muted); margin-bottom:0.75rem; align-self:flex-start;">Scaled Cross-Section Plot</h2>
+                <canvas id="sectionCanvas" width="450" height="480" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; width:100%;"></canvas>
+            </div>
+
+            <!-- 4. BOTTOM-RIGHT: SECTION PROPERTIES -->
+            <div class="calc-panel box-results">
+                <div class="results-header-row">
+                    <h2>Section Properties</h2>
+                    <div class="unit-toggle">
+                        <span class="unit-toggle-label">OUTPUT:</span>
+                        <button class="unit-btn output-unit-btn" data-unit="mm">mm</button>
+                        <button class="unit-btn output-unit-btn active" data-unit="cm">cm</button>
+                        <button class="unit-btn output-unit-btn" data-unit="m">m</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Property Cards Grid -->
+                <div class="results-cards-grid" id="resultsGrid">
+                </div>
+            </div>
+        </section>
+
+        <!-- FULL-WIDTH BOTTOM SECTIONS -->
+        <!-- Calculation Proof Steps -->
+        <section class="calc-panel full-width-panel" style="margin-top: 2rem;">
+            <div class="results-header-row">
+                <h2>Calculation Steps & Equations</h2>
+                <button id="toggleStepsBtn" class="toggle-steps-btn">Hide the steps</button>
+            </div>
+            <div id="calcSteps" class="steps-code-block" style="font-family: inherit; line-height: 1.8;"></div>
+        </section>
+
+        <!-- Dynamic Symbol Legends -->
+        <section class="calc-panel full-width-panel" id="legendGroupIbeam" style="display:none; margin-top: 2rem;">
+            <h2>Symbol Legend & Definitions — H / I Beams & Girders</h2>
+            <div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; font-size: 0.9rem; line-height: 1.6;">
+                <div class="legend-col">
+                    <p><strong>G</strong>: Mass per unit length (kg/m)</p>
+                    <p><strong>w</strong>: Self-weight load (kN/m)</p>
+                    <p><strong>H</strong>: Total section height / Depth (mm)</p>
+                    <p><strong>b</strong>: Flange width (mm)</p>
+                    <p><strong>t<sub>w</sub> / W1</strong>: Web thickness (mm)</p>
+                    <p><strong>t<sub>f</sub></strong>: Flange thickness (mm)</p>
+                    <p><strong>A</strong>: Cross-sectional area (cm²)</p>
+                </div>
+                <div class="legend-col">
+                    <p><strong>I<sub>y</sub> / I<sub>z</sub></strong>: Second moment of area, y / z axis (cm⁴)</p>
+                    <p><strong>W<sub>el.y</sub> / W<sub>el.y.top</sub></strong>: Elastic section modulus (cm³)</p>
+                    <p><strong>i<sub>y</sub> / i<sub>z</sub></strong>: Radius of gyration, y / z axis (cm)</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="calc-panel full-width-panel" id="legendGroupTee" style="display:none; margin-top: 2rem;">
+            <h2>Symbol Legend & Definitions — Tee Beams</h2>
+            <div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; font-size: 0.9rem; line-height: 1.6;">
+                <div class="legend-col">
+                    <p><strong>G</strong>: Mass per unit length (kg/m)</p>
+                    <p><strong>w</strong>: Self-weight load (kN/m)</p>
+                    <p><strong>H</strong>: Section height / Depth (mm)</p>
+                    <p><strong>b</strong>: Flange width (mm)</p>
+                    <p><strong>t<sub>w</sub></strong>: Web thickness (mm)</p>
+                    <p><strong>t<sub>f</sub></strong>: Flange thickness (mm)</p>
+                </div>
+                <div class="legend-col">
+                    <p><strong>A</strong>: Cross-sectional area (cm²)</p>
+                    <p><strong>I<sub>y</sub> / I<sub>z</sub></strong>: Second moment of area, y / z axis (cm⁴)</p>
+                    <p><strong>W<sub>el.y</sub> / W<sub>el.z</sub></strong>: Elastic section modulus, y / z axis (cm³)</p>
+                    <p><strong>i<sub>y</sub> / i<sub>z</sub></strong>: Radius of gyration, y / z axis (cm)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="calc-panel full-width-panel" id="legendGroupAngle" style="display:none; margin-top: 2rem;">
+            <h2>Symbol Legend & Definitions — Angles (L-Profiles)</h2>
+            <div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; font-size: 0.9rem; line-height: 1.6;">
+                <div class="legend-col">
+                    <p><strong>G</strong>: Mass per unit length (kg/m)</p>
+                    <p><strong>w</strong>: Self-weight load (kN/m)</p>
+                    <p><strong>H</strong>: Leg 1 length / Height (mm)</p>
+                    <p><strong>b</strong>: Leg 2 length / Width (mm)</p>
+                    <p><strong>t</strong>: Leg thickness (mm)</p>
+                </div>
+                <div class="legend-col">
+                    <p><strong>A</strong>: Cross-sectional area (cm²)</p>
+                    <p><strong>I<sub>y</sub> / I<sub>z</sub></strong>: Second moment of area, y / z axis (cm⁴)</p>
+                    <p><strong>W<sub>el.y</sub> / W<sub>el.z</sub></strong>: Elastic section modulus, y / z axis (cm³)</p>
+                    <p><strong>i<sub>y</sub> / i<sub>z</sub></strong>: Radius of gyration, y / z axis (cm)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="calc-panel full-width-panel" id="legendGroupChannel" style="display:none; margin-top: 2rem;">
+            <h2>Symbol Legend & Definitions — Channels (C / U-Profiles)</h2>
+            <div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; font-size: 0.9rem; line-height: 1.6;">
+                <div class="legend-col">
+                    <p><strong>G</strong>: Mass per unit length (kg/m)</p>
+                    <p><strong>w</strong>: Self-weight load (kN/m)</p>
+                    <p><strong>H</strong>: Section height / Depth (mm)</p>
+                    <p><strong>b</strong>: Flange width (mm)</p>
+                    <p><strong>t<sub>w</sub></strong>: Web thickness (mm)</p>
+                    <p><strong>t<sub>f</sub></strong>: Flange thickness (mm)</p>
+                </div>
+                <div class="legend-col">
+                    <p><strong>A</strong>: Cross-sectional area (cm²)</p>
+                    <p><strong>I<sub>y</sub> / I<sub>z</sub></strong>: Second moment of area, y / z axis (cm⁴)</p>
+                    <p><strong>W<sub>el.y</sub> / W<sub>el.z</sub></strong>: Elastic section modulus, y / z axis (cm³)</p>
+                    <p><strong>i<sub>y</sub> / i<sub>z</sub></strong>: Radius of gyration, y / z axis (cm)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="calc-panel full-width-panel" id="legendGroupHollow" style="display:none; margin-top: 2rem;">
+            <h2>Symbol Legend & Definitions — Hollow Profiles (CHS & RHS/SHS)</h2>
+            <div class="legend-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; font-size: 0.9rem; line-height: 1.6;">
+                <div class="legend-col">
+                    <p><strong>D</strong>: Outside diameter of circular hollow section (mm)</p>
+                    <p><strong>H</strong>: Section height / Depth (mm)</p>
+                    <p><strong>b</strong>: Section width (mm)</p>
+                    <p><strong>t</strong>: Wall thickness (mm)</p>
+                </div>
+                <div class="legend-col">
+                    <p><strong>A</strong>: Cross-sectional area (cm²)</p>
+                    <p><strong>I<sub>y</sub> / I<sub>z</sub></strong>: Second moment of area (cm⁴)</p>
+                    <p><strong>W<sub>el.y</sub> / W<sub>el.z</sub></strong>: Elastic section modulus (cm³)</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Database and Script Execution -->
+    <script src="section-database.js"></script>
+    <script src="section-tools.js"></script>
+</body>
+</html>
